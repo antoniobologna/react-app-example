@@ -1,7 +1,8 @@
-# User Auth React App & Websocket NodeJS server Example #
+# Team TODO list using React App, Websocket and NodeJS server #
 
 ## Objectives ##
-The objective of this react app is to show a fast and easy approach to user authentication using React and a nodejs server.
+The objective of this example is to show a fast and easy approach to user authentication using React and a nodejs server, along
+the usage of a rest API to show a teams todo list.
 
 ## Technologies used ##
 * React v16.x
@@ -23,7 +24,6 @@ I'm old school and somehow need to get into the configuration details, something
 ## Requirements ##
 * Mongodb v3.6.5
 * NodeJS > v8.9.0
-* Database test (you might want to pwd protected).
 
 ## Installation ##
 
@@ -76,4 +76,19 @@ Configuration file **config.json** containing database and other important confi
 	"db_user": "test",
 	"db_pwd": "test"
 }
+```
+
+## Database instructions ##
+Create a database, remember to change the db name in the *config.json* file.
+
+In the ```migration/``` folder there's data exported using the following command example:
+
+```
+$ mongoexport --db <DB_NAME> --collection <COLLECTION_NAME> --out <COLLECTION_NAME>.json
+```
+
+To import the data, ```cd``` to ```migration/``` folder and execute the following command:
+
+```
+$ mongoimport --db <DB_NAME> --collection <COLLECTION_NAME> --file <COLLECTION_NAME>.json
 ```
