@@ -1,0 +1,28 @@
+{
+	"version": "0.1.0",
+	"port": 3001,
+	"api_rate_limit": {
+		"windowMs": 100,
+	  "max": 1,
+	  "delayMs": 0
+	},
+	"crypto": {
+    "secret": "Beam Me Up, Scotty"
+  },
+	"session": {
+		"secret": ["xxxx"],
+		"name": "xsid.secure",
+		"resave": false,
+	  "saveUninitialized": true,
+		"unset": "destroy",
+	  "cookie": {
+			"httpOnly": true,
+			"secure": false,
+			"maxAge": 3600000,
+			"sameSite": false
+		}
+	},
+	"database_uri": "mongodb://127.0.0.1:27017/test",
+	"db_user": "test",
+	"db_pwd": "test"
+}

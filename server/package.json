@@ -1,0 +1,38 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "description": "ws server implementation example",
+  "main": "index.js",
+  "keywords": [
+    "nodejs",
+    "ws",
+    "express"
+  ],
+  "author": "Antonio Bologna",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
+    "express-rate-limit": "^2.11.0",
+    "express-session": "^1.15.6",
+    "helmet": "^3.12.1",
+    "mongoose": "^5.1.2",
+    "morgan": "^1.9.0",
+    "password-hash-and-salt": "^0.1.4",
+    "ws": "^5.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "connect-mongo": "^2.0.1",
+    "rimraf": "^2.6.2"
+  },
+  "scripts": {
+    "build": "rimraf dist/ && babel ./ -d dist/ --ignore ./node_modules,./.babelrc,./package.json,./*.log,./yarn.lock --copy-files",
+    "dev": "yarn build && node dist/index.js --watch ./dist",
+    "major": "npm version major -m 'Bump major version to %s'",
+    "minor": "npm version minor -m 'Bump minor version to %s'",
+    "patch": "npm version patch -m 'Bump patch version to %s'"
+  }
+}
