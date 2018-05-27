@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-/**
- * Not a very good idea to store creds along user data info,
- * but for matters of simplicity let's just do this ;)
- */
 const TodoSchema = new Schema({
 	user: {type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
 	org: { type: String, index: true },

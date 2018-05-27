@@ -29,11 +29,16 @@ const styles = theme => ({
   button: {
     margin: theme.spacing.unit,
   },
+  error: {
+    color: theme.palette.text.red,
+  },
 });
 
 class Auth extends Component {
   state = {
     username: '',
+    password: '',
+    error: false,
   }
 
   handleChange = (event) => {
@@ -44,21 +49,40 @@ class Auth extends Component {
     });
   }
 
+  auth = () => {
+    const { username, password } = this.state;
+
+    return this.props
+      .login(username, password)
+      .then((error) => {
+        if (error) {
+          return this.setState({ error: true });
+        }
+
+        return true;
+      });
+  }
+
   render() {
     const { classes } = this.props;
-    const { username } = this.state;
+    const { error } = this.state;
 
     return (
       <div className={classes.root}>
         <Grid container spacing={24} justify="center">
           <Grid item xs={4} sm={4}>
             <Paper className={classes.paper}>
+              { error ?
+                (<div className={classes.error}>
+                  Incorrect credentials. Please try again.
+                </div>) : null
+              }
+              <h1>Todo Login</h1>
               <form className={classes.authForm} noValidate autoComplete="off">
                 <TextField
                   id="username"
                   label="Username"
                   className={classes.textField}
-                  value={username}
                   onChange={this.handleChange}
                   margin="normal"
                 />
@@ -84,6 +108,7 @@ class Auth extends Component {
 
 Auth.propTypes = {
   classes: PropTypes.object.isRequired,
+  login: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Auth);

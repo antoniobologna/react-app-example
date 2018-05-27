@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 import http from 'http'
 
 import auth from './api/auth'
+import todo from './api/todo'
 
 const app = express();
 const router = express.Router();
@@ -68,6 +69,10 @@ const server = http.createServer(app);
 
 /** Let's create the websocket server */
 const webSocketServer = new WebSocketServer(server);
+
+/** Start using routes */
+app.use('/auth', auth);
+app.use('/todos', todo);
 
 /** Finally let's serve on specified port */
 server.listen(config.port, err => {
