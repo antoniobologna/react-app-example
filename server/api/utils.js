@@ -60,21 +60,31 @@ const isAdmin = (req) => {
 };
 
 /**
+ * determines if user is authenticated and is admin
+ */
+const isSuperUser = (req) => {
+  const { user } = req.session;
+  return userIsAuthenticated(req) && user.data.superuser;
+};
+
+/**
  * populates the user session
  */
 const populateSession = (user, {session}) => {
-  const { admin, id, auth, verified, name, email, revoked} = user;
+  const { _id, org, admin, superuser, auth, verified, name, email, revoked} = user;
 
   session.user = {
     authenticated: true,
     data: {
-      id,
+      id: _id,
+			org,
       admin,
+			superuser,
       verified,
       name,
       email,
       revoked,
-    }
+    },
   };
 };
 
