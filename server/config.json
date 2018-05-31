@@ -10,10 +10,10 @@
     "secret": "Beam Me Up, Scotty"
   },
 	"session": {
-		"secret": ["xxxx"],
+		"secret": "17ef3de9-2f5b-40ef-bd05-6f07145a68bf",
 		"name": "xsid.secure",
 		"resave": false,
-	  "saveUninitialized": true,
+	  "saveUninitialized": false,
 		"unset": "destroy",
 	  "cookie": {
 			"httpOnly": true,

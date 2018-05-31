@@ -7,6 +7,8 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import constants from './constants';
+import { globalParameters } from './utils';
 
 const styles = theme => ({
   root: {
@@ -42,18 +44,17 @@ class Auth extends Component {
   }
 
   handleChange = (event) => {
-    const { name, value } = event.target;
+    const { id, value } = event.currentTarget;
 
     this.setState({
-      [name]: value,
+      [id]: value,
     });
   }
 
-  auth = () => {
+  login = () => {
     const { username, password } = this.state;
 
-    return this.props
-      .login(username, password)
+    return fetch(constants.api.login, globalParameters('POST', { email:username, password }))
       .then((error) => {
         if (error) {
           return this.setState({ error: true });
@@ -90,11 +91,11 @@ class Auth extends Component {
                   id="password"
                   label="Password"
                   className={classes.textField}
+                  onChange={this.handleChange}
                   type="password"
-                  autoComplete="current-password"
                   margin="normal"
                 />
-                <Button type="submit" variant="raised" color="primary" className={classes.button}>
+                <Button onClick={this.login} type="button" variant="raised" color="primary" className={classes.button}>
                   Login
                 </Button>
               </form>
@@ -108,7 +109,6 @@ class Auth extends Component {
 
 Auth.propTypes = {
   classes: PropTypes.object.isRequired,
-  login: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Auth);

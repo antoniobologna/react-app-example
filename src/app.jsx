@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import 'babel-polyfill';
 import {
   Route,
   BrowserRouter as Router,
@@ -13,6 +14,7 @@ import { globalParameters } from './utils';
 
 import Menu from './menu';
 import Auth from './auth';
+import Home from './home';
 import constants from './constants';
 
 const styles = () => ({
@@ -27,17 +29,14 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    const isAuth = await this.isAuth();
-    this.setState({ isAuth });
+    const user = await this.isAuth();
+    this.setState({ isAuth: user.authenticated, user: user.data });
   }
 
   isAuth = () => (
     fetch(constants.api.isAuth, globalParameters())
-      .then(response => response.json)
+      .then(response => response.json())
       .then(({ data }) => data)
-      .catch((error) => {
-        console.log(error);
-      })
   )
 
   PublicRoute = ({ component: PublicComponent, ...rest }) => {
@@ -45,38 +44,32 @@ class App extends Component {
 
     return (
       <Route
-        { ...rest } render={props => (
-          !isAuth ? <PublicComponent { ...props } /> : <Redirect to={ {
-            pathname: '/home',
-          } } />
+        { ...rest }
+        render={props => (
+          !isAuth ?
+            <PublicComponent { ...props } /> :
+            <Redirect to={{ pathname: '/home' }} />
         )} />
     );
   }
 
-  PrivateRoute = ({ component: PrivateComponent, path, ...rest }) => (
-    <Route
-      path={ path }
-      { ...rest }
-      render={ props => this.privateRouteComponent(PrivateComponent, props) }
-    />
-  )
-
-  privateRouteComponent = (component, props) => {
+  PrivateRoute = ({ component: PrivateComponent, path, user, ...rest }) => {
     const { isAuth } = this.state;
 
-    if (isAuth) {
-      return (
-        <component { ...props } />
-      );
-    }
-
     return (
-      <Redirect to={ { pathname: '/login' } } />
+      <Route
+        path={ path }
+        { ...rest }
+        render={props => (
+          isAuth ?
+            <PrivateComponent { ...props } user={user} /> :
+            <Redirect to={{ pathname: '/login' }} />
+        )} />
     );
   }
 
   render() {
-    const { isAuth } = this.state;
+    const { isAuth, user } = this.state;
     const { PrivateRoute, PublicRoute } = this;
 
     return (
@@ -86,7 +79,7 @@ class App extends Component {
           <Switch>
             <PublicRoute path='/' component={ Auth } exact />
             <PublicRoute path='/login' component={ Auth } />
-            <PrivateRoute path='/home' component={ Auth } />
+            <PrivateRoute path='/home' component={ Home } user={user}/>
             <Route render={ () => <h3>No Match</h3> } />
           </Switch>
         </main>

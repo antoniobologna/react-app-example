@@ -12,7 +12,7 @@ import {
 
 router.get('/isAuth', (req, res) => {
   const { user } = req.session;
-  return res.json({data: user? true:false});
+  return res.status(200).json({data: user});
 });
 
 router.post('/logout', (req, res) => {
@@ -22,8 +22,7 @@ router.post('/logout', (req, res) => {
   });
 });
 
-router.post('/login',
-  (req, res) => {
+router.post('/login', (req, res) => {
   if(userIsAuthenticated(req)) {
     return res.status(200).end();
   }
@@ -35,7 +34,7 @@ router.post('/login',
       return res.status(401).json({ error: 'user is not authorized' });
     }
 
-    PasswordHash(password).verifyAgainst(user.password, (err, verified) => {
+    return PasswordHash(password).verifyAgainst(user.password, (err, verified) => {
       if(err || !verified) {
         return res.status(401).json({ error: 'not authorized' });
       }

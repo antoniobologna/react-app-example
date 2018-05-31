@@ -1,5 +1,5 @@
-const globalParameters = (method = 'GET', data = null, cors = false, credentials = false) => (
-  {
+const globalParameters = (method = 'GET', data = null, cors = true, credentials = true) => {
+  return {
     method,
     ...(cors ? { mode: 'cors' } : {}),
     ...(credentials ? { credentials: 'include' } : {}),
@@ -9,8 +9,8 @@ const globalParameters = (method = 'GET', data = null, cors = false, credentials
     }),
     ...(data ? { body: JSON.stringify({ ...data }) } : {}),
   }
-);
+}
 
-export default {
+export {
   globalParameters,
 };

@@ -13,12 +13,9 @@ const styles = () => ({
 });
 
 const logout = () => (
-  fetch(constants.api.logout, globalParameters())
+  fetch(constants.api.logout, globalParameters('POST'))
     .then(response => response.json())
     .then(({ data }) => (data))
-    .catch((error) => {
-      console.error(error);
-    })
 );
 
 const MenuLink = ({ content, to }) => (
@@ -59,7 +56,7 @@ Menu.propTypes = {
 };
 
 MenuLink.propTypes = {
-  content: PropTypes.object.isRequired,
+  content: PropTypes.string.isRequired,
   to: PropTypes.string.isRequired,
 };
 
