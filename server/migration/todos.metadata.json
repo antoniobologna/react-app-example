@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"test.todos"},{"v":2,"key":{"user":1},"name":"user_1","ns":"test.todos","background":true},{"v":2,"key":{"org":1},"name":"org_1","ns":"test.todos","background":true}],"uuid":"dace08b924f84f0686388a194cdb7ea6"}
