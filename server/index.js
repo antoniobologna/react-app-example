@@ -13,6 +13,7 @@ import http from 'http'
 
 import auth from './api/auth'
 import todo from './api/todo'
+import user from './api/user'
 
 const app = express();
 const router = express.Router();
@@ -72,7 +73,8 @@ const webSocketServer = new WebSocketServer(server);
 
 /** Start using routes */
 app.use('/auth', auth);
-app.use('/todos', todo);
+app.use('/todo', todo);
+app.use('/user', user);
 
 /** Finally let's serve on specified port */
 server.listen(config.port, err => {

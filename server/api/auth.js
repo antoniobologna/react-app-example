@@ -12,7 +12,7 @@ import {
 
 router.get('/isAuth', (req, res) => {
   const { user } = req.session;
-  return res.status(200).json({data: user});
+  return res.json({data: user? true:false});
 });
 
 router.post('/logout', (req, res) => {

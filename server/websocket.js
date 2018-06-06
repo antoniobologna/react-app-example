@@ -9,8 +9,10 @@ export default class WebSocketServer {
       });
 
       wss.on('connection', ws => {
+        this._ws = ws;
+
         ws.on('message', msg => {
-          console.log('received: %s', msg)
+          console.log('received: %s', msg);
         });
 
         //Let's send some status (timestamp) every minute
@@ -19,5 +21,13 @@ export default class WebSocketServer {
     } else {
       console.error('check ws connection.');
     }
+  }
+
+  getWebsocket() {
+    return this._ws
+  }
+
+  pushMsg(msg) {
+    this._ws.send(msg);
   }
 }

@@ -26,11 +26,18 @@ const styles = () => ({
 class App extends Component {
   state = {
     isAuth: false,
+    user: null,
   }
 
   async componentDidMount() {
-    const user = await this.isAuth();
-    this.setState({ isAuth: user.authenticated, user: user.data });
+    const isAuth = await this.isAuth();
+    let user = {};
+
+    if (isAuth) {
+      user = await this.fetchUser();
+    }
+
+    this.setState({ isAuth, user });
   }
 
   isAuth = () => (
@@ -39,7 +46,23 @@ class App extends Component {
       .then(({ data }) => data)
   )
 
-  PublicRoute = ({ component: PublicComponent, ...rest }) => {
+  authenticate = async (isAuth = true) => {
+    let user = null;
+
+    if(isAuth) {
+      user = await this.fetchUser();
+    }
+
+    this.setState({ isAuth, user })
+  }
+
+  fetchUser = () => (
+    fetch(constants.api.user, globalParameters())
+      .then(response => response.json())
+      .then(({ data }) => data)
+  )
+
+  PublicRoute = ({ component: PublicComponent, authenticate, ...rest }) => {
     const { isAuth } = this.state;
 
     return (
@@ -47,7 +70,7 @@ class App extends Component {
         { ...rest }
         render={props => (
           !isAuth ?
-            <PublicComponent { ...props } /> :
+            <PublicComponent { ...props } authenticate={ authenticate } /> :
             <Redirect to={{ pathname: '/home' }} />
         )} />
     );
@@ -62,7 +85,7 @@ class App extends Component {
         { ...rest }
         render={props => (
           isAuth ?
-            <PrivateComponent { ...props } user={user} /> :
+            <PrivateComponent { ...props } user={ user } /> :
             <Redirect to={{ pathname: '/login' }} />
         )} />
     );
@@ -70,16 +93,16 @@ class App extends Component {
 
   render() {
     const { isAuth, user } = this.state;
-    const { PrivateRoute, PublicRoute } = this;
+    const { PrivateRoute, PublicRoute, authenticate } = this;
 
     return (
       <Router>
         <main>
-          { isAuth ? <Menu /> : null }
+          { isAuth ? <Menu logout={ () => authenticate(false) } /> : null }
           <Switch>
-            <PublicRoute path='/' component={ Auth } exact />
-            <PublicRoute path='/login' component={ Auth } />
-            <PrivateRoute path='/home' component={ Home } user={user}/>
+            <PublicRoute path='/' component={ Auth } exact authenticate={ authenticate } />
+            <PublicRoute path='/login' component={ Auth } authenticate={ authenticate } />
+            <PrivateRoute path='/home' component={ Home } user={ user }/>
             <Route render={ () => <h3>No Match</h3> } />
           </Switch>
         </main>

@@ -8,5 +8,7 @@ export default {
     isAuth: `${apiURL}/auth/isAuth`, // GET
     login: `${apiURL}/auth/login`, // POST
     logout: `${apiURL}/auth/logout`, // POST
+    user: `${apiURL}/user/`, // GET
+    todo: `${apiURL}/todo/`, // GET
   },
 };

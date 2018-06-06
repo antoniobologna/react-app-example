@@ -53,15 +53,17 @@ class Auth extends Component {
 
   login = () => {
     const { username, password } = this.state;
+    const { authenticate } = this.props;
 
-    return fetch(constants.api.login, globalParameters('POST', { email:username, password }))
-      .then((error) => {
-        if (error) {
+    return fetch(constants.api.login, globalParameters('POST', { email: username, password }))
+      .then(response => {
+        if (!response.ok) {
           return this.setState({ error: true });
         }
 
-        return true;
-      });
+        return authenticate();
+      })
+      .catch(err => this.setState({ error: true }));
   }
 
   render() {
@@ -109,6 +111,7 @@ class Auth extends Component {
 
 Auth.propTypes = {
   classes: PropTypes.object.isRequired,
+  authenticate: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Auth);

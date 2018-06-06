@@ -1,50 +1,81 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { globalParameters } from './utils';
 import constants from './constants';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 const styles = () => ({
   root: {
     flexGrow: 1,
   },
+  flex: {
+    flex: 1,
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20,
+  },
 });
-
-const logout = () => (
-  fetch(constants.api.logout, globalParameters('POST'))
-    .then(response => response.json())
-    .then(({ data }) => (data))
-);
 
 const MenuLink = ({ content, to }) => (
   <Route path={to}>
-    <li>
-      <Link to={to}>{ content }</Link>
-    </li>
+    <Link to={to}>{ content }</Link>
   </Route>
 );
 
 class Menu extends Component {
-  handleLogout = (event) => {
+  handleLogout = async (event) => {
     event.preventDefault();
-    logout();
+    const isLogout = await this.logout();
+
+    if(isLogout) {
+      this.setState({ isLogout })
+    }
   }
+
+  logout = () => (
+    fetch(constants.api.logout, globalParameters('POST'))
+      .then(response => {
+        if(response.ok) {
+          return this.props.logout();
+        }
+
+        return false;
+      })
+  )
 
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <Grid container spacing={24} justify="center">
-          <Grid item xs={12} sm={12}>
-            <ul>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+
+            <Typography variant="title" color="inherit" className={classes.flex}>
+              React Auth Example
+            </Typography>
+
+            <Typography variant="title" color="inherit" className={classes.flex}>
               <MenuLink to="/home" content="Home" />
-              <li><a href="#" onClick={this.handleLogout}>Logout</a></li>
-            </ul>
-          </Grid>
-        </Grid>
+            </Typography>
+
+            <Button color="inherit" onClick={this.handleLogout}>
+              Logout
+            </Button>
+          </Toolbar>
+        </AppBar>
       </div>
     );
   }
@@ -53,6 +84,7 @@ class Menu extends Component {
 
 Menu.propTypes = {
   classes: PropTypes.object.isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 MenuLink.propTypes = {

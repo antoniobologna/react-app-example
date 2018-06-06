@@ -9,6 +9,12 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import constants from './constants';
 import { globalParameters } from './utils';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Switch from '@material-ui/core/Switch';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const styles = theme => ({
   root: {
@@ -34,24 +40,143 @@ const styles = theme => ({
   error: {
     color: theme.palette.text.red,
   },
+  welcome: {
+    textAlign: 'center',
+  },
+
+  todo: {
+    listStyle: 'none',
+  },
+  task: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  taskBody: {
+
+  },
+  taskTime: {
+    color: theme.palette.text.gray,
+  },
 });
 
 class Home extends Component {
+  state = {
+    todoCount: 0,
+    todo: [],
+  }
+
+  componentDidMount() {
+    this.fetchAllTasks().then(todo => {
+      this.setState({ todoCount: todo.length, todo, })
+    });
+  }
+
+  /**
+   * @function handleTaskChange Marks as done or not done a task.
+   * @param taskID {string} task's unique ID.
+   *
+   * @returns {object} Promise from setState.
+   */
+  handleTaskDelete = (taskID) => {
+    let newTodoList = [...this.state.todo];
+
+    return fetch(constants.api.todo + taskID, globalParameters('DELETE'))
+      .then(response => {
+        if(response.ok) {
+          newTodoList = newTodoList.filter(task => task._id !== taskID);
+
+          return this.setState({ todo: newTodoList });
+        }
+      })
+  }
+
+  /**
+   * @function handleTaskDelete Deletes a task.
+   * @param taskID {string} task's unique ID.
+   *
+   * @returns {object} Promise from setState.
+   */
+  handleTaskChange = (taskID) => {
+    let newTodoList = [...this.state.todo];
+
+    return fetch(constants.api.todo + taskID, globalParameters('PATCH'))
+      .then(response => {
+        if(response.ok) {
+          const taskIndex = newTodoList.findIndex(task => task._id === taskID);
+          newTodoList[taskIndex].done = !newTodoList[taskIndex].done;
+
+          return this.setState({ todo: newTodoList });
+        }
+      })
+  }
+
+  /**
+   * @function getTodo
+   *
+   * @returns {Map {DOM}} Map of List Items containing tasks.
+   */
+  getTodo() {
+    const { classes, } = this.props;
+    const { todo, } = this.state;
+
+    return todo.map((task, key) => (
+      <div key={key}>
+        <ListItem button className={classes.task}>
+          <Switch
+            checked={ task.done }
+            onChange={() => this.handleTaskChange(task._id)}
+            value="task"
+            color="primary"
+          />
+          <ListItemText primary={ task.body } secondary={ task.created_at } />
+          <Button
+            variant="fab"
+            aria-label="delete"
+            className={classes.button}
+            onClick={() => this.handleTaskDelete(task._id)}>
+            <DeleteIcon />
+          </Button>
+        </ListItem>
+        <Divider light />
+      </div>
+    ));
+  }
+
+  fetchAllTasks = () => (
+    fetch(constants.api.todo, globalParameters())
+      .then(response => response.json())
+      .then(({ data }) => data)
+  )
+
   render() {
     const { classes, user } = this.props;
+    const { todoCount } = this.state;
 
-    return (
-      <div className={classes.root}>
-        <Grid container spacing={24} justify="center">
-          <Grid item xs={12} sm={12}>
-            <Paper className={classes.paper}>
-              <h1>Welcome back, {user.name}</h1>
-
-            </Paper>
+    if(user) {
+      return (
+        <div className={classes.root}>
+          <Grid container spacing={24} justify="center">
+            <Grid item xs={12} sm={12}>
+              <div className={classes.welcome}>
+                <h1>Welcome back, {user.name}</h1>
+                <div>
+                  You have { todoCount } tasks in your team's todo.
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={6}>
+              <Paper className={classes.paper}>
+                <List component="nav">
+                  { this.getTodo() }
+                </List>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
-    );
+        </div>
+      );
+    }
+
+    return null
   }
 }
 
