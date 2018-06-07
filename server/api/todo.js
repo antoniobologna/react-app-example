@@ -21,40 +21,38 @@ router.get('/', (req, res) => {
       org,
     })
     .then(tasks => {
-      return res.status(200).json({data: tasks});
+      return res.status(200).json({ data: tasks, });
     })
 });
 
 /** Post new todo */
 router.post('/', (req, res) => {
   if (!userIsAuthenticated(req)) {
-    return res.status(401).json({ error: 'not authorized' });
+    return res.status(401).json({ error: 'not authorized', });
   }
 
   const { body } = req.body;
   const { org, id } = req.session.user.data;
 
-  const task = {
+  const todo = new Todo({
     user: id,
     org,
     body,
-  };
+  });
 
-  const todo = new Todo(task);
-
-  return todo.save(err => {
+  return todo.save((err, task) => {
     if (err) {
 			return res.status(500).json({ err });
 		}
 
-    return res.status(200).end();
+    return res.status(200).json({ data: task, });
   });
 });
 
 /** Delete selected task */
 router.delete('/:id', (req, res) => {
   if (!userIsAuthenticated(req)) {
-    return res.status(401).json({ error: 'not authorized' });
+    return res.status(401).json({ error: 'not authorized', });
   }
 
   // allow users to delete from other users as well
@@ -63,7 +61,7 @@ router.delete('/:id', (req, res) => {
 
   // Change to return all non-private tasks, and all private ones from user.
   return Todo
-    .findOneAndRemove({   _id: id, })
+    .findOneAndRemove({  _id: id, })
     .then(doc => {
       return res.status(200).end();
     });
